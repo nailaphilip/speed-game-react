@@ -1,92 +1,94 @@
-import React, { Component } from 'react';
-import './App.css';
-import Circle from './Circle';
-import StartGameButton from './StartGameButton';
-import EndGameButton from './EndGameButton';
+import React, { Component } from "react";
+import "./App.css";
+import Circle from "./Circle";
+import StartGameButton from "./StartGameButton";
+import EndGameButton from "./EndGameButton";
 
+const getRndInt = (min, max) =>
+  Math.floor(Math.random() * (max - min + 1)) + min; //can be outside
 
 class App extends Component {
-  state= {
+  state = {
     circles: [1, 2, 3, 4, 5],
     score: 0,
     active: 0,
     pace: 1000,
-    timer: '',
     rounds: 0,
+  };
 
+  timer;
 
-  }
-
-
-  clickHandler = (e, i) => {
-      e.preventDefault()
-      console.log('click', i)
-      this.setState({
-        score: this.state.score + 10
-      })
+  clickHandler = (i) => {
+    if (i !== this.state.active) {
+      return this.endgame();
     }
 
-  
+    this.setState({
+      score: this.state.score + 10,
+    });
+  };
+
+  // enableCircles = () => {
+  //   this.state.circles.forEach((circle) => {
+  //     circle.style.pointerEvents = "auto";
+  //   });
+  // };
 
   endgame = () => {
     clearInterval(this.timer);
     this.setState({
       score: 0,
-      isActive: false,
+      active: 0,
     });
-    };
-
-
-  
+  };
 
   starthandler = () => {
+    this.pickNew();
+    console.log("game started");
+  };
+  // we separated starhandler and picknew
+  pickNew = () => {
     if (this.state.rounds >= 10) {
-      return endGame()
+      return this.endGame();
     }
-     const nextActive = pickNew(this.state.active)
-  
-  
-    this.setState.active = nextActive
-  
-  
-    this.setState.timer = setTimeout(startHandler, this.state.pace)
-  
-    this.setState.pace -= 10
-    this.setState.rounds++
 
+    let nextActive;
 
-    pickNew (this.state.active) {
-      nextActive = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min
-      if (nextActive !== this.state.active
-      ) {
-        return nextActive
-      }
-      return pickNew(this.state.active)
-    }
-    
+    do {
+      nextActive = getRndInt(0, 4);
+    } while (nextActive === this.state.active);
 
+    console.log("picknew number", nextActive);
+    this.setState({
+      active: nextActive,
+      pace: this.state.pace - 10,
+      rounds: this.state.rounds + 1,
+    });
+
+    this.timer = setTimeout(this.pickNew, this.state.pace);
+  };
 
   render() {
     return (
       <div>
         <h2>SpeedGame</h2>
         <div>
-        <p>Score: <span className="score">{this.state.score}</span></p>
-      </div>
-      <div className='circles'>
-      {this.state.circles.map((circle,i) => <Circle key={i} number={i} click={(e)=>this.clickHandler(e, i)}/>)}
-      </div>
+          <p>
+            Score: <span className="score">{this.state.score}</span>
+          </p>
+        </div>
+        <div className="circles">
+          {this.state.circles.map((circle, i) => (
+            <Circle key={i} number={i} click={(e) => this.clickHandler(e, i)} />
+          ))}
+        </div>
         <div>
-        <StartGameButton onClick={this.starthandler} />
-        <EndGameButton onClick={this.endhandler} />
-      </div>
+          <StartGameButton onClick={this.starthandler} />
+          <EndGameButton onClick={this.endgame} />
+        </div>
       </div>
     );
   }
 }
 
 export default App;
-
-
-
-
