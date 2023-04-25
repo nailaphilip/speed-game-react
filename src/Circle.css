@@ -1,0 +1,19 @@
+
+  
+  .circle {
+    background-color: rgb(1, 28, 28);
+    border-radius: 50%;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 1rem;
+    /* pointer-events: none; */
+  }
+  
+  .circle.active {
+    background-color: tomato;
+    background-image: url('./assets/logo.jpg');
+    background-size: cover;
+  }
