@@ -43,7 +43,7 @@ class App extends Component {
     if (this.state.rounds >= 10) {
       return endGame()
     }
-     nextActive = pickNew(this.state.active)
+     const nextActive = pickNew(this.state.active)
   
   
     this.setState.active = nextActive
