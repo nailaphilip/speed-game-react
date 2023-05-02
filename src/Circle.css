@@ -12,8 +12,8 @@
     /* pointer-events: none; */
   }
   
-  .circle.active {
+  .circleactive {
     background-color: tomato;
-    background-image: url('./assets/logo.jpg');
-    background-size: cover;
+    /* background-image: url('./assets/logo.jpg');
+    background-size: cover; */
   }

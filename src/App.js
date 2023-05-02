@@ -1,8 +1,10 @@
 import React, { Component } from "react";
-import "./App.css";
 import Circle from "./Circle";
 import StartGameButton from "./StartGameButton";
 import EndGameButton from "./EndGameButton";
+import Modal from "./Modal";
+
+import "./App.css";
 
 const getRndInt = (min, max) =>
   Math.floor(Math.random() * (max - min + 1)) + min; //can be outside
@@ -13,18 +15,22 @@ class App extends Component {
     score: 0,
     active: 0,
     pace: 1000,
+    gameOver: false,
     rounds: 0,
+    gameOn: false,
   };
 
   timer;
 
-  clickHandler = (i) => {
-    if (i !== this.state.active) {
+  clickHandler = (item) => {
+    if (item !== this.state.active) {
+      console.log(item);
       return this.endgame();
     }
 
     this.setState({
       score: this.state.score + 10,
+      rounds: this.state.rounds - 1,
     });
   };
 
@@ -34,38 +40,55 @@ class App extends Component {
   //   });
   // };
 
-  endgame = () => {
-    clearInterval(this.timer);
-    this.setState({
-      score: 0,
-      active: 0,
-    });
-  };
-
-  starthandler = () => {
-    this.pickNew();
-    console.log("game started");
-  };
-  // we separated starhandler and picknew
+  // we separated starthandler and picknew
   pickNew = () => {
-    if (this.state.rounds >= 10) {
-      return this.endGame();
+    if (this.state.rounds >= 5) {
+      return this.endgame();
     }
 
     let nextActive;
 
     do {
-      nextActive = getRndInt(0, 4);
+      nextActive = getRndInt(0, 5);
     } while (nextActive === this.state.active);
 
     console.log("picknew number", nextActive);
     this.setState({
       active: nextActive,
-      pace: this.state.pace - 10,
+      pace: this.state.pace * 0.95,
       rounds: this.state.rounds + 1,
     });
 
     this.timer = setTimeout(this.pickNew, this.state.pace);
+  };
+
+  starthandler = () => {
+    this.setState({
+      gameOn: !this.state.gameOn,
+    });
+    this.pickNew();
+    console.log("game started");
+  };
+
+  endgame = () => {
+    clearTimeout(this.timer);
+    this.setState({
+      gameOver: !this.state.gameOver,
+    });
+    // this.setState({
+    //   score: 0,
+    //   active: 0,
+  };
+
+  closeHandler = () => {
+    this.setState({
+      gameOver: !this.state.gameOver,
+      gameOn: !this.state.gameOn,
+      score: 0,
+      active: 0,
+      pace: 1000,
+      rounds: 0,
+    });
   };
 
   render() {
@@ -79,12 +102,24 @@ class App extends Component {
         </div>
         <div className="circles">
           {this.state.circles.map((circle, i) => (
-            <Circle key={i} number={i} click={(e) => this.clickHandler(e, i)} />
+            <Circle
+              key={circle}
+              number={i}
+              click={() => this.clickHandler(circle)}
+              active={this.state.current === circle}
+              gameStatus={this.state.gameOn}
+            />
           ))}
         </div>
+        {this.state.gameOver && (
+          <Modal close={this.closeHandler} score={this.state.score} />
+        )}
         <div>
-          <StartGameButton onClick={this.starthandler} />
-          <EndGameButton onClick={this.endgame} />
+          {this.state.gameOn ? (
+            <EndGameButton endBtn={this.endgame} />
+          ) : (
+            <StartGameButton onClick={this.starthandler} />
+          )}
         </div>
       </div>
     );
